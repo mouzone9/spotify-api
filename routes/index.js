@@ -3,7 +3,6 @@ var router = express.Router();
 require('dotenv').config();
 const SpotifyWebApi = require('spotify-web-api-node');
 
-
 var GetRandomStringClass = require("../services/getRandomString");
 var querystring = require("node:querystring");
 const GetRandomString = require("../services/getRandomString");
@@ -84,6 +83,74 @@ router.get('/currently-playing', (req, res) => {
             console.error('Error getting current playback state:', error);
             res.send('Error getting current playback state');
         });
+});
+
+// Route handler for the get active device endpoint.
+router.get('/get-active-device', (req, res) => {
+    spotifyApi.getMyDevices()
+        .then(data => {
+            const activeDevices = data.body.devices.filter(device => device.is_active);
+            if (activeDevices.length > 0) {
+                res.send(`Active device: ${activeDevices[0].name}`);
+            } else {
+                res.send('No active device found');
+            }
+        })
+        .catch(error => {
+            console.error('Error getting devices:', error);
+            res.send('Error getting devices');
+        });
+});
+
+router.get('/pause', (req, res) => {
+    spotifyApi.pause()
+        .then(() => {
+            res.send('Playback paused');
+        })
+        .catch(error => {
+            console.error('Error pausing playback:', error);
+            res.send('Error pausing playback');
+        });
+});
+
+// Route handler for the play endpoint.
+router.get('/play', (req, res) => {
+    spotifyApi.play()
+        .then(() => {
+            res.send('Playback started');
+        })
+        .catch(error => {
+            console.error('Error starting playback:', error);
+            res.send('Error starting playback');
+        });
+});
+
+router.get('/next', async (req, res) => {
+    try {
+        await spotifyApi.skipToNext();
+        res.send('Skipped to next track');
+    } catch (error) {
+        res.status(500).send('Error skipping track');
+    }
+});
+
+router.get('/previous', async (req, res) => {
+    try {
+        await spotifyApi.skipToPrevious();
+        res.send('Skipped to previous track');
+    } catch (error) {
+        res.status(500).send('Error returning to previous track');
+    }
+});
+
+router.get('/seek/:position', async (req, res) => {
+    try {
+        const position = parseInt(req.params.position);
+        await spotifyApi.seek(position);
+        res.send('Moved to position: ' + position);
+    } catch (error) {
+        res.status(500).send('Error seeking position');
+    }
 });
 
 module.exports = router;
