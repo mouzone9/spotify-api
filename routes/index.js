@@ -70,4 +70,20 @@ router.get('/callback', (req, res) => {
     });
 });
 
+// Route handler for the currently playing track endpoint.
+router.get('/currently-playing', (req, res) => {
+    spotifyApi.getMyCurrentPlaybackState()
+        .then(data => {
+            if (data.body && data.body.is_playing) {
+                res.send(`Currently playing: ${data.body.item.name} by ${data.body.item.artists[0].name}`);
+            } else {
+                res.send('No song is currently playing.');
+            }
+        })
+        .catch(error => {
+            console.error('Error getting current playback state:', error);
+            res.send('Error getting current playback state');
+        });
+});
+
 module.exports = router;
