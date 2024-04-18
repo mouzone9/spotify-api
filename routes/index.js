@@ -73,10 +73,12 @@ router.get('/callback', (req, res) => {
 router.get('/currently-playing', (req, res) => {
     spotifyApi.getMyCurrentPlaybackState()
         .then(data => {
+            console.log(data.body);
             if (data.body && data.body.is_playing) {
                  res.json({
-                    song: data.body.item.name,
-                    artist: data.body.item.artists[0].name
+                     name: data.body.item.name,
+                     artist: data.body.item.artists[0].name,
+                     albumImageUrl: data.body.item.album.images[0].url
                  });
             } else {
                 res.send('No song is currently playing.');
