@@ -74,7 +74,10 @@ router.get('/currently-playing', (req, res) => {
     spotifyApi.getMyCurrentPlaybackState()
         .then(data => {
             if (data.body && data.body.is_playing) {
-                res.send(`Currently playing: ${data.body.item.name} by ${data.body.item.artists[0].name}`);
+                 res.json({
+                    song: data.body.item.name,
+                    artist: data.body.item.artists[0].name
+                 });
             } else {
                 res.send('No song is currently playing.');
             }
@@ -147,7 +150,7 @@ router.get('/track-position', (req, res) => {
     spotifyApi.getMyCurrentPlaybackState()
         .then(data => {
             if (data.body && data.body.is_playing) {
-                res.send(`Current track position: ${data.body.progress_ms} ms`);
+                res.send(data.body.progress_ms.toString());
             } else {
                 res.send('No song is currently playing.');
             }
