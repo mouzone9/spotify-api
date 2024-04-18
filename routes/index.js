@@ -150,7 +150,9 @@ router.get('/track-position', (req, res) => {
     spotifyApi.getMyCurrentPlaybackState()
         .then(data => {
             if (data.body && data.body.is_playing) {
-                res.send(data.body.progress_ms.toString());
+                res.json({
+                    time: data.body.progress_ms.toString()
+                });
             } else {
                 res.send('No song is currently playing.');
             }
