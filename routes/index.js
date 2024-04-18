@@ -3,10 +3,6 @@ var router = express.Router();
 require('dotenv').config();
 const SpotifyWebApi = require('spotify-web-api-node');
 
-var GetRandomStringClass = require("../services/getRandomString");
-var querystring = require("node:querystring");
-const GetRandomString = require("../services/getRandomString");
-
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
@@ -96,7 +92,7 @@ router.get('/get-active-device', (req, res) => {
         .then(data => {
             const activeDevices = data.body.devices.filter(device => device.is_active);
             if (activeDevices.length > 0) {
-                res.send(`Active device: ${activeDevices[0].name}`);
+                res.send(`Active device: ${activeDevices[0].name} and ${activeDevices[0].id}`);
             } else {
                 res.send('No active device found');
             }
@@ -149,8 +145,7 @@ router.get('/previous', async (req, res) => {
 });
 
 router.put('/send-position', (req, res) => {
-    //const position = req.body.position; // Get the position from the request body
-    const position = 111733; // Get the position from the request body
+    const position = req.body.position; // Get the position from the request body
     spotifyApi.seek(position)
         .then(() => {
             res.send('Playback position updated successfully');
@@ -166,7 +161,8 @@ router.get('/track-position', (req, res) => {
         .then(data => {
             if (data.body && data.body.is_playing) {
                 res.json({
-                    time: data.body.progress_ms.toString()
+                    time: data.body.progress_ms.toString(),
+                    duration: data.body.item.duration_ms.toString()
                 });
             } else {
                 res.send('No song is currently playing.');
@@ -175,6 +171,33 @@ router.get('/track-position', (req, res) => {
         .catch(error => {
             console.error('Error getting current playback state:', error);
             res.send('Error getting current playback state');
+        });
+});
+
+router.get('/get-volume', (req, res) => {
+    spotifyApi.getMyCurrentPlaybackState()
+        .then(data => {
+            if (data.body && data.body.device) {
+                res.json({ volume: data.body.device.volume_percent });  // Envoyer en format JSON
+            } else {
+                res.status(404).json({ error: 'No song is currently playing.' });
+            }
+        })
+        .catch(error => {
+            console.error('Error getting current playback state:', error);
+            res.status(500).json({ error: 'Error getting current playback state' });
+        });
+});
+
+router.put('/set-volume', (req, res) => {
+    const volume = req.body.volume; // Get the volume from the request body
+    spotifyApi.setVolume(volume)
+        .then(() => {
+            res.send('Volume updated successfully');
+        })
+        .catch(error => {
+            console.error('Error setting volume:', error);
+            res.send('Error setting volume');
         });
 });
 
