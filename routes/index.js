@@ -148,6 +148,19 @@ router.get('/previous', async (req, res) => {
     }
 });
 
+router.put('/send-position', (req, res) => {
+    //const position = req.body.position; // Get the position from the request body
+    const position = 111733; // Get the position from the request body
+    spotifyApi.seek(position)
+        .then(() => {
+            res.send('Playback position updated successfully');
+        })
+        .catch(error => {
+            console.error('Error setting playback position:', error);
+            res.send('Error setting playback position');
+        });
+});
+
 router.get('/track-position', (req, res) => {
     spotifyApi.getMyCurrentPlaybackState()
         .then(data => {
