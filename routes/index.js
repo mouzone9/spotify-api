@@ -143,14 +143,19 @@ router.get('/previous', async (req, res) => {
     }
 });
 
-router.get('/seek/:position', async (req, res) => {
-    try {
-        const position = parseInt(req.params.position);
-        await spotifyApi.seek(position);
-        res.send('Moved to position: ' + position);
-    } catch (error) {
-        res.status(500).send('Error seeking position');
-    }
+router.get('/track-position', (req, res) => {
+    spotifyApi.getMyCurrentPlaybackState()
+        .then(data => {
+            if (data.body && data.body.is_playing) {
+                res.send(`Current track position: ${data.body.progress_ms} ms`);
+            } else {
+                res.send('No song is currently playing.');
+            }
+        })
+        .catch(error => {
+            console.error('Error getting current playback state:', error);
+            res.send('Error getting current playback state');
+        });
 });
 
 module.exports = router;
