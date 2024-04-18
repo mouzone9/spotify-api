@@ -33,6 +33,13 @@ Maintenant que vous avez votre `Client ID`, `Client Secret` et `Redirect URI`, v
 
 Maintenant, votre application est prête à être utilisée avec l'API Spotify.
 
+### Étape 5: Lancer votre serveur et l'app
+
+1. N'oubliez pas de lancer votre serveur via `http://localhost:3000/login` et de vous identifier sur votre machine locale à Spotify.
+2. Si vous utilisez un mobile pour tester merci de changer toutes les adresses par votre adresse IPV4 de votre carte wifi de votre ordinateur (ipconfig)
+3. Il faut que le mobile et le serveur soit sur le même réseau wifi !
+4. Normalement, une fois fait le test peut commencer
+
 ## Installation des dépendances
 
 Avant de pouvoir exécuter l'application, vous devez installer les dépendances. Pour ce faire, ouvrez un terminal à la racine du projet et exécutez la commande suivante :
